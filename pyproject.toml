@@ -1,7 +1,8 @@
 [project]
 name = "prfs"
 version = "0.1.0"
-description = "Add your description here"
+description = "Inline PR comments as local files"
+license = "Apache-2.0"
 readme = "README.md"
 authors = [
     { name = "alexjuda", email = "alexanderjuda@gmail.com" }
