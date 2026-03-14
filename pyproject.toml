@@ -6,9 +6,21 @@ readme = "README.md"
 authors = [
     { name = "alexjuda", email = "alexanderjuda@gmail.com" }
 ]
-requires-python = ">=3.14"
-dependencies = []
+requires-python = ">=3.13"
+dependencies = [
+    "pyyaml",
+]
+
+[project.scripts]
+prfs = "prfs.cli:main"
 
 [build-system]
-requires = ["uv_build>=0.9.11,<0.10.0"]
+requires = ["uv_build>=0.9.11"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.15.6",
+    "ty>=0.0.23",
+]
