@@ -19,7 +19,16 @@ def sample_thread_with_patch():
         id="abc123",
         file_path="src/utils.js",
         line=42,
-        patch="@@ -1,2 +1,3 @@",
+        patch=(
+            """diff --git a/src/utils.js b/src/utils.js
+--- a/src/utils.js
++++ b/src/utils.js
+@@ -40,7 +40,7 @@ function getUser() {
+  const db = connect();
+-  return db.query('users');
++  return await db.query('users');
+}"""
+        ),
         comments=[ThreadComment(author="alice", body="Test comment")],
     )
 
@@ -60,7 +69,11 @@ class TestRenderThreadToMarkdown:
         result = render_thread_to_markdown(sample_thread_with_patch)
 
         assert "patch: |" in result
-        assert "@@ -1,2 +1,3 @@" in result
+        assert sample_thread_with_patch.patch in result
+
+        result_lines = result.splitlines()
+        patch_idx = result_lines.index("patch: |")
+        assert result_lines[patch_idx + 1].startswith("  "), "Patch should be indented"
 
     def test_includes_comment_as_markdown_section(self, sample_thread):
         result = render_thread_to_markdown(sample_thread)

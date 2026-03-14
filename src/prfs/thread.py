@@ -20,7 +20,7 @@ def render_thread_to_markdown(thread: Thread) -> str:
     frontmatter = f"""---
 file: {thread.file_path}:{thread.line}
 patch: |
-{thread.patch}
+  {thread.patch}
 ---
 """
 
