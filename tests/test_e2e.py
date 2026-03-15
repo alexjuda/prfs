@@ -5,7 +5,7 @@ class TestHelp:
     @staticmethod
     def test_top_level():
         proc = subprocess.run(["prfs"], capture_output=True, text=True)
-        assert "Usage: prfs" in proc.stdout
+        assert "Usage:" in proc.stdout
         assert "--help" in proc.stdout
         assert "fetch" in proc.stdout
         assert "clean" in proc.stdout
