@@ -16,15 +16,17 @@ class Thread:
     comments: list[ThreadComment]
 
     def render_to_markdown(self) -> str:
+        patch_lines = (self.patch or "").splitlines()
+        indented = [f"  {line}" for line in patch_lines]
         frontmatter = f"""---
 file: {self.file_path}:{self.line}
 patch: |
-  {self.patch}
----
-"""
+{"\n".join(indented)}"""
 
         comments_md = ""
         for comment in self.comments:
-            comments_md += f"\n@{comment.author}:\n\n{comment.body}\n"
+            comments_md += "\n---\n\n"
+            comments_md += f"{comment.body}\n\n"
+            comments_md += f"~@{comment.author}\n"
 
         return frontmatter + comments_md

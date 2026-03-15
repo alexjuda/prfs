@@ -12,6 +12,7 @@ dependencies = [
     "pyyaml",
     "typer>=0.15.0",
     "rich>=13.0.0",
+    "msgspec>=0.20.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

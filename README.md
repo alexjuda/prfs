@@ -48,13 +48,13 @@ patch: |
   }
 ---
 
-@alice:
-
 The return type should be `Promise<User>` not `User`.
+
+~@alice
 
 ---
 
-@bob:
-
 Good catch. I'll fix it.
+
+~@bob
 ```
