@@ -61,11 +61,15 @@ class TestRenderToMarkdown:
         result = sample_thread_with_patch.render_to_markdown()
 
         assert "patch: |" in result
-        assert sample_thread_with_patch.patch in result
+        patch_lines = sample_thread_with_patch.patch.splitlines()
+        for patch_line in patch_lines:
+            assert patch_line in result
 
         result_lines = result.splitlines()
         patch_idx = result_lines.index("patch: |")
-        assert result_lines[patch_idx + 1].startswith("  "), "Patch should be indented"
+        for patch_line_i in range(len(patch_lines)):
+            rendered_line = result_lines[patch_idx + 1 + patch_line_i]
+            assert rendered_line.startswith(" " * 2), "Patch should be indented"
 
     @staticmethod
     def test_includes_comment_as_markdown_section(sample_thread):
@@ -75,7 +79,7 @@ class TestRenderToMarkdown:
         assert "Test comment" in result
 
     @staticmethod
-    def test_renders_multiple_comments_as_separate_sections(
+    def test_renders_includes_multiple_comments(
         sample_thread_multiple_comments,
     ):
         result = sample_thread_multiple_comments.render_to_markdown()
@@ -84,6 +88,28 @@ class TestRenderToMarkdown:
         assert "@bob" in result
         assert "First comment" in result
         assert "Second comment" in result
+
+        # This test is toughtly coupled to the implementation because that's the easiest
+        # way to test string rendering. It's fine.
+        assert (
+            result
+            == """---
+file: src/utils.js:42
+patch: |
+  diff
+---
+
+First comment
+
+~@alice
+
+---
+
+Second comment
+
+~@bob
+"""
+        )
 
     @staticmethod
     def test_handles_thread_with_no_comments(sample_thread_no_comments):

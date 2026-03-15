@@ -8,7 +8,6 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from prfs.git import get_current_branch, get_repo_info
 from prfs.github import GitHubClient
-from prfs.github_cli import find_pr_for_branch
 
 console = Console()
 
@@ -39,7 +38,8 @@ def fetch(
     if pr is None:
         branch = get_current_branch(cwd=str(repo_path))
         owner, repo_name = get_repo_info(cwd=str(repo_path))
-        pr_number = find_pr_for_branch(owner, repo_name, branch, cwd=str(repo_path))
+        client = GitHubClient(owner, repo_name)
+        pr_number = client.find_pr_for_branch(branch, cwd=str(repo_path))
         if pr_number is None:
             console.print(f"[red]Error: No PR found for branch: {branch}[/red]")
             raise typer.Exit(1)
@@ -85,7 +85,8 @@ def clean(
     if pr is None:
         branch = get_current_branch(cwd=str(repo_path))
         owner, repo_name = get_repo_info(cwd=str(repo_path))
-        pr_number = find_pr_for_branch(owner, repo_name, branch, cwd=str(repo_path))
+        client = GitHubClient(owner, repo_name)
+        pr_number = client.find_pr_for_branch(branch, cwd=str(repo_path))
         if pr_number is None:
             console.print(f"[red]Error: No PR found for branch: {branch}[/red]")
             raise typer.Exit(1)

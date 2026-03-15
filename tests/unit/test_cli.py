@@ -8,7 +8,7 @@ from prfs.github import GitHubClient
 
 class TestGhValidation:
     @staticmethod
-    @patch("prfs.github_cli.subprocess.run")
+    @patch("prfs.github.subprocess.run")
     def test_exits_if_gh_not_installed(mock_run):
         mock_run.side_effect = FileNotFoundError("gh")
 
@@ -16,14 +16,14 @@ class TestGhValidation:
             GitHubClient.validate_gh()
 
     @staticmethod
-    @patch("prfs.github_cli.subprocess.run")
+    @patch("prfs.github.subprocess.run")
     def test_exits_if_gh_not_authenticated(mock_run):
         mock_run.side_effect = Exception("Authentication required")
         with pytest.raises(SystemExit):
             GitHubClient.validate_gh()
 
     @staticmethod
-    @patch("prfs.github_cli.subprocess.run")
+    @patch("prfs.github.subprocess.run")
     def test_passes_validation_when_gh_ready(mock_run):
         mock_run.return_value = MagicMock(returncode=0)
         GitHubClient.validate_gh()
@@ -31,8 +31,8 @@ class TestGhValidation:
 
 class TestFetchWithFlags:
     @staticmethod
-    @patch("prfs.github.validate_gh")
-    @patch("prfs.github.get_pr_comments")
+    @patch("prfs.github.GitHubClient.validate_gh")
+    @patch("prfs.github.GitHubClient.get_pr_comments")
     @patch("prfs.cli.get_repo_info")
     def test_fetch_with_pr_flag(
         mock_repo_info, mock_comments, mock_validate, temp_repo
@@ -42,11 +42,11 @@ class TestFetchWithFlags:
 
         fetch(pr=123, repo=str(temp_repo), verbose=False)
 
-        mock_comments.assert_called_once_with("owner", "repo", 123)
+        mock_comments.assert_called_once_with(123)
 
     @staticmethod
-    @patch("prfs.github.validate_gh")
-    @patch("prfs.github.get_pr_comments")
+    @patch("prfs.github.GitHubClient.validate_gh")
+    @patch("prfs.github.GitHubClient.get_pr_comments")
     @patch("prfs.cli.get_repo_info")
     def test_fetch_with_verbose_flag(
         mock_repo_info, mock_comments, mock_validate, temp_repo
@@ -56,13 +56,13 @@ class TestFetchWithFlags:
 
         fetch(pr=1, repo=str(temp_repo), verbose=True)
 
-        mock_comments.assert_called_once_with("owner", "repo", 1)
+        mock_comments.assert_called_once_with(1)
 
 
 class TestClean:
     @staticmethod
     @patch("prfs.github.GitHubClient.validate_gh")
-    @patch("prfs.cli.GitHubClient.clean_pr")
+    @patch("prfs.github.GitHubClient.clean_pr")
     @patch("prfs.cli.get_repo_info")
     def test_clean_with_pr_flag(mock_repo_info, mock_clean, mock_validate, temp_repo):
         mock_repo_info.return_value = ("owner", "repo")
@@ -74,10 +74,10 @@ class TestClean:
 
     @staticmethod
     @patch("prfs.github.GitHubClient.validate_gh")
-    @patch("prfs.cli.GitHubClient.clean_pr")
+    @patch("prfs.github.GitHubClient.clean_pr")
     @patch("prfs.cli.get_repo_info")
     @patch("prfs.cli.get_current_branch")
-    @patch("prfs.cli.find_pr_for_branch")
+    @patch("prfs.github.GitHubClient.find_pr_for_branch")
     def test_clean_without_pr_flag(
         mock_find_pr, mock_branch, mock_repo_info, mock_clean, mock_validate, temp_repo
     ):
