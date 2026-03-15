@@ -1,3 +1,6 @@
+# Customizing venv location:
+# export UV_PROJECT_ENVIRONMENT="venv2"
+
 PHONY: test
 test:
 	uv run pytest tests

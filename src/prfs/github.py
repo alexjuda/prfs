@@ -1,5 +1,7 @@
-import subprocess
-import json
+import shutil
+from pathlib import Path
+
+from prfs.github_cli import get_pr_comments, get_pr_reviews, validate_gh
 from prfs.thread import Thread, ThreadComment
 
 
@@ -12,36 +14,15 @@ class GitHubClient:
         self.owner = owner
         self.repo = repo
 
+    @staticmethod
+    def validate_gh() -> None:
+        validate_gh()
+
     def get_pr_reviews(self, pr_number: int) -> list[dict]:
-        result = subprocess.run(
-            [
-                "gh",
-                "api",
-                f"repos/{self.owner}/{self.repo}/pulls/{pr_number}/reviews",
-            ],
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode != 0:
-            return []
-        return json.loads(result.stdout)
+        return get_pr_reviews(self.owner, self.repo, pr_number)
 
     def get_pr_comments(self, pr_number: int) -> list[dict]:
-        cmd = [
-            "gh",
-            "api",
-            f"repos/{self.owner}/{self.repo}/pulls/{pr_number}/comments",
-        ]
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode != 0:
-            raise GitHubError(
-                f"Couldn't fetch comments. Command {cmd} failed. {result.stderr}"
-            )
-        return json.loads(result.stdout)
+        return get_pr_comments(self.owner, self.repo, pr_number)
 
     def fetch_pr_review_comments(self, pr_number: int) -> list[Thread]:
         comments = self.get_pr_comments(pr_number)
@@ -66,3 +47,10 @@ class GitHubClient:
             threads[thread_id].comments.append(ThreadComment(author=user, body=body))
 
         return list(threads.values())
+
+    def clean_pr(self, pr_number: int, cwd: str | None = None) -> bool:
+        prfs_dir = Path(cwd or ".") / ".prfs" / str(pr_number)
+        if prfs_dir.exists():
+            shutil.rmtree(prfs_dir)
+            return True
+        return False

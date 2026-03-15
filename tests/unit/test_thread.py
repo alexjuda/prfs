@@ -1,16 +1,6 @@
 import pytest
-from prfs.thread import render_thread_to_markdown, ThreadComment, Thread
 
-
-@pytest.fixture
-def sample_thread():
-    return Thread(
-        id="abc123",
-        file_path="src/utils.js",
-        line=42,
-        patch="diff content",
-        comments=[ThreadComment(author="alice", body="Test comment")],
-    )
+from prfs.thread import Thread, ThreadComment
 
 
 @pytest.fixture
@@ -58,15 +48,17 @@ def sample_thread_no_comments():
     )
 
 
-class TestRenderThreadToMarkdown:
-    def test_produces_frontmatter_with_file_location(self, sample_thread):
-        result = render_thread_to_markdown(sample_thread)
+class TestRenderToMarkdown:
+    @staticmethod
+    def test_produces_frontmatter_with_file_location(sample_thread):
+        result = sample_thread.render_to_markdown()
 
         assert result.startswith("---")
         assert "file: src/utils.js:42" in result
 
-    def test_produces_frontmatter_with_patch(self, sample_thread_with_patch):
-        result = render_thread_to_markdown(sample_thread_with_patch)
+    @staticmethod
+    def test_produces_frontmatter_with_patch(sample_thread_with_patch):
+        result = sample_thread_with_patch.render_to_markdown()
 
         assert "patch: |" in result
         assert sample_thread_with_patch.patch in result
@@ -75,23 +67,26 @@ class TestRenderThreadToMarkdown:
         patch_idx = result_lines.index("patch: |")
         assert result_lines[patch_idx + 1].startswith("  "), "Patch should be indented"
 
-    def test_includes_comment_as_markdown_section(self, sample_thread):
-        result = render_thread_to_markdown(sample_thread)
+    @staticmethod
+    def test_includes_comment_as_markdown_section(sample_thread):
+        result = sample_thread.render_to_markdown()
 
         assert "@alice" in result
         assert "Test comment" in result
 
+    @staticmethod
     def test_renders_multiple_comments_as_separate_sections(
-        self, sample_thread_multiple_comments
+        sample_thread_multiple_comments,
     ):
-        result = render_thread_to_markdown(sample_thread_multiple_comments)
+        result = sample_thread_multiple_comments.render_to_markdown()
 
         assert "@alice" in result
         assert "@bob" in result
         assert "First comment" in result
         assert "Second comment" in result
 
-    def test_handles_thread_with_no_comments(self, sample_thread_no_comments):
-        result = render_thread_to_markdown(sample_thread_no_comments)
+    @staticmethod
+    def test_handles_thread_with_no_comments(sample_thread_no_comments):
+        result = sample_thread_no_comments.render_to_markdown()
 
         assert "file: src/utils.js:42" in result

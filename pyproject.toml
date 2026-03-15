@@ -10,6 +10,8 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "pyyaml",
+    "typer>=0.15.0",
+    "rich>=13.0.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -30,6 +32,17 @@ source = "uv-dynamic-versioning"
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests requiring real external services",
+]
+
+[tool.ruff]
+[tool.ruff.lint]
+select = ["I"]
 
 [dependency-groups]
 dev = [

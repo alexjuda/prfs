@@ -15,17 +15,16 @@ class Thread:
     patch: str | None
     comments: list[ThreadComment]
 
-
-def render_thread_to_markdown(thread: Thread) -> str:
-    frontmatter = f"""---
-file: {thread.file_path}:{thread.line}
+    def render_to_markdown(self) -> str:
+        frontmatter = f"""---
+file: {self.file_path}:{self.line}
 patch: |
-  {thread.patch}
+  {self.patch}
 ---
 """
 
-    comments_md = ""
-    for comment in thread.comments:
-        comments_md += f"\n@{comment.author}:\n\n{comment.body}\n"
+        comments_md = ""
+        for comment in self.comments:
+            comments_md += f"\n@{comment.author}:\n\n{comment.body}\n"
 
-    return frontmatter + comments_md
+        return frontmatter + comments_md
