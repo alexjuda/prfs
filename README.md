@@ -2,6 +2,12 @@
 
 Pull Request File System. PR review comments as local files. Browse, filter, and script against GitHub PR review threads using familiar Unix tools.
 
+## Installation
+
+```bash
+uv tool install prfs
+```
+
 ## How it works
 
 `prfs fetch` pulls comments from a GitHub PR to `{repo}/.prfs/{pr_number}/{thread_id}.md`. One markdown file per thread with YAML frontmatter containing the file path and git patch.
