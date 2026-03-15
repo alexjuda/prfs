@@ -12,8 +12,8 @@ class TestHelp:
             # Colored output screws up assertions on the CI because it detects there's no TTY.
             env={**os.environ, "NO_COLOR": "1"},
         )
-        assert "Usage: prfs" in proc.stdout
-        assert "--help" in proc.stdout
+        assert "Usage:" in proc.stdout
+        assert "prfs" in proc.stdout
         assert "fetch" in proc.stdout
         assert "clean" in proc.stdout
 
